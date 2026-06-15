@@ -1,7 +1,7 @@
-package com.junmo.certificatesystem.entitiy;
+package com.junmo.certificatesystem.entity;
 
 import com.junmo.certificatesystem.common.entity.BaseTimeEntity;
-
+//게시글
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
