@@ -1,4 +1,4 @@
-package com.junmo.certificatesystem.entitiy;
+package com.junmo.certificatesystem.entity;
 
 import com.junmo.certificatesystem.common.entity.BaseTimeEntity;
 import com.junmo.certificatesystem.common.enums.RoleType;
@@ -12,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-
+//사용자 (이메일, 비밀번호, 역할)
 @Entity
 @Table(name = "users", indexes = {
     @Index(name = "idx_users_email", columnList = "email", unique = true)
