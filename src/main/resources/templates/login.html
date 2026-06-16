@@ -85,6 +85,7 @@
         <div th:if="${logout}" class="alert alert-success" th:text="${logout}"></div>
 
         <form th:action="@{/login}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="field">
                 <label for="username">ID</label>
                 <input type="text" id="username" name="username"
