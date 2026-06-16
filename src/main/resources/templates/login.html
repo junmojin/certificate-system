@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 경력증명서 시스템</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            width: 360px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 28px;
+        }
+        .field { margin-bottom: 16px; }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4a90d9;
+            box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 11px;
+            background: #4a90d9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-submit:hover { background: #3a7bc8; }
+        .alert {
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .alert-error { background: #fdecea; color: #c0392b; border: 1px solid #f5c6cb; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .hint {
+            margin-top: 20px;
+            font-size: 0.78rem;
+            color: #999;
+            text-align: center;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>경력증명서 시스템</h1>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${logout}" class="alert alert-success" th:text="${logout}"></div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="field">
+                <label for="username">ID</label>
+                <input type="text" id="username" name="username"
+                       placeholder="사용자 ID 입력" required autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="비밀번호 입력" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-submit">Submit</button>
+        </form>
+
+        <p class="hint">
+            관리자: admin / admin<br>
+            사용자 예: jmjin (비밀번호는 CSV 제공값)
+        </p>
+    </div>
+</body>
+</html>

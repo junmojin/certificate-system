@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경력 조회</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 40px;
+        }
+        .card {
+            background: #fff;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 1.3rem; color: #333; margin-bottom: 20px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        th { background: #f8f9fa; width: 120px; }
+        .actions { display: flex; gap: 10px; }
+        .btn {
+            padding: 9px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: #fff;
+        }
+        .btn-print { background: #4a90d9; }
+        .btn-back { background: #6c757d; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .no-print { display: none; }
+            .card { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>개인 경력 조회</h1>
+
+        <table>
+            <tr>
+                <th>이름</th>
+                <td th:text="${name}"></td>
+            </tr>
+            <tr>
+                <th>사용자 ID</th>
+                <td th:text="${userId}"></td>
+            </tr>
+            <tr>
+                <th>입사일</th>
+                <td th:text="${hireDate}"></td>
+            </tr>
+            <tr>
+                <th>재직 상태</th>
+                <td>재직중</td>
+            </tr>
+        </table>
+
+        <div class="actions no-print">
+            <button type="button" class="btn btn-print" onclick="window.print()">출력</button>
+            <a th:href="@{/home}" class="btn btn-back">메인으로</a>
+        </div>
+    </div>
+</body>
+</html>
