@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>접근 거부</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #fff; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px; }
+        h1 { color: #c0392b; font-size: 1.2rem; }
+        p { color: #666; line-height: 1.6; }
+        a { color: #4a90d9; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>접근 권한이 없습니다</h1>
+        <p>현재 계정으로는 해당 메뉴에 접근할 수 없습니다.<br>계정 유형(USER / ADMIN)에 맞는 메뉴를 이용해 주세요.</p>
+        <p><a th:href="@{/login}">로그인 화면으로</a></p>
+    </div>
+</body>
+</html>
