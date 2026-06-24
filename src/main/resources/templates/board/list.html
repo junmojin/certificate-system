@@ -2,19 +2,86 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시판</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>건의 게시판</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 40px; }
-        .card { background: #fff; max-width: 520px; margin: 0 auto; padding: 32px; border-radius: 8px; }
-        a { color: #4a90d9; margin-right: 12px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 32px 20px; }
+        .container { max-width: 960px; margin: 0 auto; }
+        .card { background: #fff; padding: 28px 32px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        h1 { font-size: 1.35rem; margin: 0; color: #333; }
+        .desc { color: #666; font-size: 0.9rem; margin: 6px 0 0; }
+        .btn {
+            display: inline-block; padding: 9px 16px; border-radius: 4px; text-decoration: none;
+            font-size: 0.9rem; border: none; cursor: pointer;
+        }
+        .btn-primary { background: #4a90d9; color: #fff; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border-bottom: 1px solid #eee; padding: 12px 10px; text-align: left; font-size: 0.92rem; }
+        th { background: #f8f9fa; color: #555; font-weight: 600; }
+        td.title a { color: #333; text-decoration: none; font-weight: 500; }
+        td.title a:hover { color: #4a90d9; }
+        .file-icon { color: #4a90d9; font-size: 0.82rem; margin-left: 6px; }
+        .empty { text-align: center; color: #888; padding: 40px 0; }
+        .message { padding: 10px 12px; border-radius: 4px; margin-bottom: 16px; font-size: 0.88rem; }
+        .message.error { background: #fdecea; color: #c0392b; }
+        .message.success { background: #e8f5e9; color: #2e7d32; }
+        .col-no { width: 70px; text-align: center; }
+        .col-author { width: 110px; }
+        .col-attach { width: 70px; text-align: center; }
+        .col-views { width: 70px; text-align: center; }
+        .col-date { width: 150px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>게시판 (공동 이용)</h1>
-        <p>사용자·관리자 공통 메뉴입니다. Q&amp;A 게시판 기능은 추후 구현합니다.</p>
-        <a th:href="@{/home}">사용자 메인</a>
-        <a th:href="@{/admin/home}">관리자 메인</a>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div>
+                    <h1>건의 게시판</h1>
+                    <p class="desc">자유롭게 의견·건의사항을 작성할 수 있습니다. (사용자·관리자 공통)</p>
+                </div>
+                <div class="toolbar">
+                    <a th:href="@{/boards/new}" class="btn btn-primary">글쓰기</a>
+                    <a th:href="@{${homeUrl}}" class="btn btn-secondary">메인</a>
+                </div>
+            </div>
+
+            <div class="message error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <div class="message success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+            <table th:if="${boards != null and !boards.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th class="col-no">번호</th>
+                        <th>제목</th>
+                        <th class="col-author">작성자</th>
+                        <th class="col-attach">첨부</th>
+                        <th class="col-views">조회</th>
+                        <th class="col-date">작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="board : ${boards}">
+                        <td class="col-no" th:text="${board.id}"></td>
+                        <td class="title">
+                            <a th:href="@{/boards/{id}(id=${board.id})}" th:text="${board.title}"></a>
+                        </td>
+                        <td class="col-author" th:text="${board.authorName}"></td>
+                        <td class="col-attach">
+                            <span class="file-icon" th:if="${board.hasAttachment}">📎</span>
+                            <span th:if="${!board.hasAttachment}">-</span>
+                        </td>
+                        <td class="col-views" th:text="${board.viewCount}"></td>
+                        <td class="col-date" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="empty" th:if="${boards == null or boards.isEmpty()}">등록된 건의 글이 없습니다.</p>
+        </div>
     </div>
 </body>
 </html>
