@@ -88,7 +88,7 @@
                 <li th:each="item : ${myApplications}">
                     <a th:href="@{/certificate/{id}/view(id=${item.id})}"
                        th:text="|증명서 #${item.id} - ${item.companyName} / ${item.position}|"></a>
-                    <span class="status" th:text="'[' + ${item.status} + ']'"></span>
+                    <span class="status" th:text="'[' + ${item.statusLabel} + ']'"></span>
                 </li>
             </ul>
             <p class="empty-history"
