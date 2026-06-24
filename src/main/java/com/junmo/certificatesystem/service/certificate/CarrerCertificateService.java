@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.junmo.certificatesystem.common.enums.CertificateStatus;
+import com.junmo.certificatesystem.dto.certificate.CertificateAdminDetailResponse;
+import com.junmo.certificatesystem.dto.certificate.CertificateAdminSummaryResponse;
 import com.junmo.certificatesystem.dto.certificate.CertificateApplyRequest;
 import com.junmo.certificatesystem.dto.certificate.CertificateSummaryResponse;
 import com.junmo.certificatesystem.dto.certificate.CertificateViewData;
@@ -23,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CarrerCertificateService {
 
-    private static final String DEFAULT_COMPANY_ADDRESS = "경기도 성남시 분당구 판교로 OOO번길 OO";
+    private static final String DEFAULT_COMPANY_ADDRESS = "경기도 의왕시 광진말로54 의왕스마트시티퀀텀 B동 5층";
     private static final String DEFAULT_REPRESENTATIVE = "대표이사 O O O";
     private static final DateTimeFormatter TABLE_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -64,6 +66,7 @@ public class CarrerCertificateService {
                         .companyName(c.getCompanyName())
                         .position(c.getPosition())
                         .status(c.getStatus())
+                        .statusLabel(c.getStatus().getLabel())
                         .build())
                 .toList();
     }
@@ -71,6 +74,86 @@ public class CarrerCertificateService {
     @Transactional(readOnly = true)
     public List<CarrerCertificate> getMyApplications(String userId) {
         return carrerCertificateRepository.findMyApplications(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertificateAdminSummaryResponse> getAdminApplicationSummaries(String userIdFilter) {
+        List<CarrerCertificate> certificates = userIdFilter == null || userIdFilter.isBlank()
+                ? carrerCertificateRepository.findAllWithApplicant()
+                : carrerCertificateRepository.findByApplicantUserId(userIdFilter.trim());
+
+        return certificates.stream()
+                .map(this::toAdminSummary)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getApplicantUserIds() {
+        return carrerCertificateRepository.findDistinctApplicantUserIds();
+    }
+
+    @Transactional(readOnly = true)
+    public CertificateAdminDetailResponse getAdminApplicationDetail(Long certificateId) {
+        CarrerCertificate certificate = carrerCertificateRepository.findByIdWithApplicant(certificateId)
+                .orElseThrow(() -> new IllegalArgumentException("증명서 신청을 찾을 수 없습니다."));
+        return toAdminDetail(certificate);
+    }
+
+    @Transactional
+    public void approveApplication(Long certificateId) {
+        CarrerCertificate certificate = getCertificateForReview(certificateId);
+        certificate.setStatus(CertificateStatus.APPROVED);
+    }
+
+    @Transactional
+    public void rejectApplication(Long certificateId) {
+        CarrerCertificate certificate = getCertificateForReview(certificateId);
+        certificate.setStatus(CertificateStatus.REJECTED);
+    }
+
+    private CarrerCertificate getCertificateForReview(Long certificateId) {
+        CarrerCertificate certificate = carrerCertificateRepository.findByIdWithApplicant(certificateId)
+                .orElseThrow(() -> new IllegalArgumentException("증명서 신청을 찾을 수 없습니다."));
+
+        if (certificate.getStatus() != CertificateStatus.PENDING) {
+            throw new IllegalArgumentException("승인 대기 상태의 신청만 처리할 수 있습니다.");
+        }
+        return certificate;
+    }
+
+    private CertificateAdminSummaryResponse toAdminSummary(CarrerCertificate certificate) {
+        User applicant = certificate.getApplicant();
+        return CertificateAdminSummaryResponse.builder()
+                .id(certificate.getId())
+                .applicantUserId(applicant.getUserId())
+                .applicantName(applicant.getName())
+                .companyName(certificate.getCompanyName())
+                .position(certificate.getPosition())
+                .purpose(certificate.getPurpose())
+                .status(certificate.getStatus())
+                .statusLabel(certificate.getStatus().getLabel())
+                .appliedAt(certificate.getCreatedAt())
+                .build();
+    }
+
+    private CertificateAdminDetailResponse toAdminDetail(CarrerCertificate certificate) {
+        User applicant = certificate.getApplicant();
+        CertificateStatus status = certificate.getStatus();
+
+        return CertificateAdminDetailResponse.builder()
+                .id(certificate.getId())
+                .applicantUserId(applicant.getUserId())
+                .applicantName(applicant.getName())
+                .hireDate(applicant.getHireDate())
+                .companyName(certificate.getCompanyName())
+                .position(certificate.getPosition())
+                .purpose(certificate.getPurpose())
+                .status(status)
+                .statusLabel(status.getLabel())
+                .appliedAt(certificate.getCreatedAt())
+                .updatedAt(certificate.getUpdatedAt())
+                .canReview(status == CertificateStatus.PENDING)
+                .build();
     }
 
     private CertificateViewData toViewData(CarrerCertificate certificate) {
