@@ -17,7 +17,7 @@ import com.junmo.certificatesystem.security.Sha256PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 
 /**
- * FR-02 접근제어의 핵심 설정 클래스.
+ * 접근제어의 핵심 설정 클래스.
  *
  * [역할]
  * 1) 어떤 URL을 누가 접근할 수 있는지 규칙 정의
@@ -84,7 +84,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
                 // 일반 사용자 전용 URL
-                .requestMatchers("/home", "/career", "/certificate").hasRole("USER")
+                .requestMatchers("/home", "/career", "/certificate", "/certificate/**").hasRole("USER")
 
                 // 사용자 + 관리자 공통 URL
                 .requestMatchers("/boards", "/boards/**").hasAnyRole("USER", "ADMIN")
