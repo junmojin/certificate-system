@@ -2,18 +2,107 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>증명서 신청 조회</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 40px; }
-        .card { background: #fff; max-width: 520px; margin: 0 auto; padding: 32px; border-radius: 8px; }
-        a { color: #4a90d9; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 32px 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .card { background: #fff; padding: 28px 32px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+        h1 { font-size: 1.35rem; margin: 0; color: #333; }
+        .desc { color: #666; font-size: 0.9rem; margin: 6px 0 0; }
+        .filter { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+        .filter label { font-size: 0.88rem; color: #555; }
+        .filter select { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn {
+            display: inline-block; padding: 8px 14px; border-radius: 4px; text-decoration: none;
+            font-size: 0.88rem; border: none; cursor: pointer;
+        }
+        .btn-primary { background: #4a90d9; color: #fff; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border-bottom: 1px solid #eee; padding: 11px 10px; text-align: left; font-size: 0.9rem; }
+        th { background: #f8f9fa; color: #555; font-weight: 600; }
+        td a { color: #4a90d9; text-decoration: none; }
+        td a:hover { text-decoration: underline; }
+        .badge {
+            display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.78rem;
+        }
+        .badge.pending { background: #fff3cd; color: #856404; }
+        .badge.approved { background: #e8f5e9; color: #2e7d32; }
+        .badge.rejected { background: #fdecea; color: #c0392b; }
+        .badge.issued { background: #e3f2fd; color: #1565c0; }
+        .empty { text-align: center; color: #888; padding: 36px 0; }
+        .message { padding: 10px 12px; border-radius: 4px; margin-bottom: 16px; font-size: 0.88rem; }
+        .message.error { background: #fdecea; color: #c0392b; }
+        .message.success { background: #e8f5e9; color: #2e7d32; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>증명서 신청 조회 (FR-04 예정)</h1>
-        <p>관리자 전용 메뉴입니다. FR-04에서 발급 승인/거부 기능을 구현합니다.</p>
-        <a th:href="@{/admin/home}">관리자 메인으로</a>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div>
+                    <h1>증명서 신청 조회</h1>
+                    <p class="desc">사용자 계정별 경력증명서 신청 내역을 조회하고 발급 승인·거부를 처리합니다.</p>
+                </div>
+                <a th:href="@{/admin/home}" class="btn btn-secondary">관리자 메인</a>
+            </div>
+
+            <div class="message error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <div class="message success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+            <form class="filter" th:action="@{/admin/certificates}" method="get">
+                <label for="userId">사용자 계정</label>
+                <select id="userId" name="userId">
+                    <option value="" th:selected="${selectedUserId == ''}">전체 사용자</option>
+                    <option th:each="uid : ${applicantUserIds}"
+                            th:value="${uid}" th:text="${uid}"
+                            th:selected="${selectedUserId == uid}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary">조회</button>
+            </form>
+
+            <table th:if="${applications != null and !applications.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>신청번호</th>
+                        <th>사용자 ID</th>
+                        <th>성명</th>
+                        <th>회사명</th>
+                        <th>직위</th>
+                        <th>발급 목적</th>
+                        <th>상태</th>
+                        <th>신청일</th>
+                        <th>상세</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="app : ${applications}">
+                        <td th:text="${app.id}"></td>
+                        <td th:text="${app.applicantUserId}"></td>
+                        <td th:text="${app.applicantName}"></td>
+                        <td th:text="${app.companyName}"></td>
+                        <td th:text="${app.position}"></td>
+                        <td th:text="${app.purpose}"></td>
+                        <td>
+                            <span class="badge pending" th:if="${app.status.name() == 'PENDING'}"
+                                  th:text="${app.statusLabel}"></span>
+                            <span class="badge approved" th:if="${app.status.name() == 'APPROVED'}"
+                                  th:text="${app.statusLabel}"></span>
+                            <span class="badge rejected" th:if="${app.status.name() == 'REJECTED'}"
+                                  th:text="${app.statusLabel}"></span>
+                            <span class="badge issued" th:if="${app.status.name() == 'ISSUED'}"
+                                  th:text="${app.statusLabel}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(app.appliedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td><a th:href="@{/admin/certificates/{id}(id=${app.id})}">보기</a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="empty" th:if="${applications == null or applications.isEmpty()}">신청 내역이 없습니다.</p>
+        </div>
     </div>
 </body>
 </html>
