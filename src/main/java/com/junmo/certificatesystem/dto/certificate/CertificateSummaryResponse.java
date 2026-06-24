@@ -13,4 +13,5 @@ public class CertificateSummaryResponse {
     private final String companyName;
     private final String position;
     private final CertificateStatus status;
+    private final String statusLabel;
 }
