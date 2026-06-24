@@ -128,6 +128,8 @@
             color: #856404;
             margin-left: 6px;
         }
+        .status-badge.approved { background: #e8f5e9; color: #2e7d32; }
+        .status-badge.rejected { background: #fdecea; color: #c0392b; }
 
         @page {
             size: A4;
@@ -228,8 +230,10 @@
 
             <div class="screen-only no-print">
                 신청 상태:
-                <span th:text="${cert.status}"></span>
+                <span th:text="${cert.status.label}"></span>
                 <span class="status-badge" th:if="${cert.status.name() == 'PENDING'}">승인 대기</span>
+                <span class="status-badge approved" th:if="${cert.status.name() == 'APPROVED'}">발급 승인</span>
+                <span class="status-badge rejected" th:if="${cert.status.name() == 'REJECTED'}">발급 거부</span>
             </div>
         </div>
     </div>
