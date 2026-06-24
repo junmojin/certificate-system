@@ -27,12 +27,11 @@
             <p>ID: <strong th:text="${userId}"></strong></p>
         </div>
 
-        <!-- FR-02: USER 계정 전용 메뉴만 표시 (관리자 메뉴 없음) -->
+        <!-- FR-02/FR-03: 경력 조회 후 증명서 신청·출력 -->
         <p class="menu-title">이용 가능 메뉴</p>
         <ul class="menu">
             <li><a th:href="@{/career}">경력 조회</a></li>
-            <li><a th:href="@{/certificate}">증명서 신청</a></li>
-            <li><a th:href="@{/boards}">게시판 (Q&amp;A)</a></li>
+            <li><a th:href="@{/boards}">건의 게시판</a></li>
         </ul>
 
         <form th:action="@{/logout}" method="post">
