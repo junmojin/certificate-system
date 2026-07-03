@@ -135,6 +135,8 @@ public class BoardController {
         boolean admin = isAdmin(userDetails);
         model.addAttribute("isAdmin", admin);
         model.addAttribute("homeUrl", admin ? "/admin/home" : "/home");
+        model.addAttribute("name", userDetails.getUser().getName());
+        model.addAttribute("userId", userDetails.getUsername());
         model.addAttribute("currentUserId", userDetails.getUsername());
         model.addAttribute("currentUserName", userDetails.getUser().getName());
     }

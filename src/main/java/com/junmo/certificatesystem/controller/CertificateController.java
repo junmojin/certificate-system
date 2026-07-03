@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.junmo.certificatesystem.controller.HomeController;
 import com.junmo.certificatesystem.dto.certificate.CertificateApplyRequest;
 import com.junmo.certificatesystem.dto.certificate.CertificateViewData;
 import com.junmo.certificatesystem.entity.CarrerCertificate;
@@ -78,6 +79,7 @@ public class CertificateController {
         CertificateViewData viewData = carrerCertificateService.getOwnCertificateView(
                 id, userDetails.getUsername());
 
+        HomeController.addUserAttributes(authentication, model);
         addViewAttributes(model, viewData);
         return "certificate/view";
     }
