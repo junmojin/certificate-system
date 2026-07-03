@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>사용자 행위 추적</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 40px; }
-        .card { background: #fff; max-width: 520px; margin: 0 auto; padding: 32px; border-radius: 8px; }
-        a { color: #4a90d9; }
-    </style>
-</head>
+<head th:replace="~{fragments/hrms :: head('행위 추적')}"></head>
 <body>
-    <div class="card">
-        <h1>사용자 행위 추적 (추후 구현)</h1>
-        <p>관리자 전용 메뉴입니다.</p>
-        <a th:href="@{/admin/home}">관리자 메인으로</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/hrms :: sidebar-admin('logs')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/hrms :: topbar('사용자 행위 추적', 'Activity Audit Log')}"></header>
+        <main class="app-content">
+            <div class="card content-narrow">
+                <div class="alert alert-info">이 기능은 추후 구현 예정입니다.</div>
+                <p class="card-desc">관리자 전용 — 사용자 활동 로그를 조회합니다.</p>
+                <a th:href="@{/admin/home}" class="btn btn-secondary">관리자 홈</a>
+            </div>
+        </main>
     </div>
+</div>
 </body>
 </html>
