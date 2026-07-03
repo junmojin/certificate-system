@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' · HR Portal'">HR Portal</title>
+    <link rel="stylesheet" th:href="@{/css/hrms.css}">
+</head>
+
+<body>
+
+<!-- 사용자 사이드바 -->
+<aside class="sidebar no-print" th:fragment="sidebar-user(activeMenu)">
+    <div class="sidebar-brand">
+        <div class="logo-mark">HR</div>
+        <h2>HR Portal</h2>
+        <p>인사관리 시스템</p>
+    </div>
+    <div class="sidebar-role user">EMPLOYEE</div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">My HR</div>
+        <a th:href="@{/home}" th:classappend="${activeMenu == 'home'} ? 'active'">
+            <span class="nav-icon">⌂</span> 대시보드
+        </a>
+        <a th:href="@{/career}" th:classappend="${activeMenu == 'career'} ? 'active'">
+            <span class="nav-icon">☰</span> 경력 조회
+        </a>
+        <a th:href="@{/certificate}" th:classappend="${activeMenu == 'certificate'} ? 'active'">
+            <span class="nav-icon">📄</span> 증명서 신청
+        </a>
+        <div class="nav-section">Communication</div>
+        <a th:href="@{/boards}" th:classappend="${activeMenu == 'board'} ? 'active'">
+            <span class="nav-icon">💬</span> 건의 게시판
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-user" th:if="${name != null}">
+            <strong th:text="${name}">사용자</strong>
+            <span th:text="${userId}">userId</span>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-outline" style="width:100%;color:#cbd5e1;border-color:rgba(255,255,255,0.2);">로그아웃</button>
+        </form>
+    </div>
+</aside>
+
+<!-- 관리자 사이드바 -->
+<aside class="sidebar no-print" th:fragment="sidebar-admin(activeMenu)">
+    <div class="sidebar-brand">
+        <div class="logo-mark">HR</div>
+        <h2>HR Admin</h2>
+        <p>인사관리 시스템</p>
+    </div>
+    <div class="sidebar-role admin">ADMINISTRATOR</div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Management</div>
+        <a th:href="@{/admin/home}" th:classappend="${activeMenu == 'home'} ? 'active'">
+            <span class="nav-icon">⌂</span> 관리자 홈
+        </a>
+        <a th:href="@{/admin/certificates}" th:classappend="${activeMenu == 'certificates'} ? 'active'">
+            <span class="nav-icon">📋</span> 증명서 신청 조회
+        </a>
+        <a th:href="@{/admin/activity-logs}" th:classappend="${activeMenu == 'logs'} ? 'active'">
+            <span class="nav-icon">📊</span> 사용자 행위 추적
+        </a>
+        <div class="nav-section">Communication</div>
+        <a th:href="@{/boards}" th:classappend="${activeMenu == 'board'} ? 'active'">
+            <span class="nav-icon">💬</span> 건의 게시판
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-user" th:if="${name != null}">
+            <strong th:text="${name}">관리자</strong>
+            <span th:text="${userId}">admin</span>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-outline" style="width:100%;color:#cbd5e1;border-color:rgba(255,255,255,0.2);">로그아웃</button>
+        </form>
+    </div>
+</aside>
+
+<!-- 상단 바 -->
+<header class="topbar no-print" th:fragment="topbar(title, subtitle)">
+    <div class="topbar-title">
+        <h1 th:text="${title}">페이지</h1>
+        <p th:text="${subtitle}">설명</p>
+    </div>
+    <div class="topbar-meta" th:if="${name != null}">
+        <div th:text="${name} + ' (' + ${userId} + ')'"></div>
+    </div>
+</header>
+
+</body>
+</html>
