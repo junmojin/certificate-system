@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>접근 거부</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: #fff; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px; }
-        h1 { color: #c0392b; font-size: 1.2rem; }
-        p { color: #666; line-height: 1.6; }
-        a { color: #4a90d9; text-decoration: none; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>접근 권한이 없습니다</h1>
-        <p>현재 계정으로는 해당 메뉴에 접근할 수 없습니다.<br>계정 유형(USER / ADMIN)에 맞는 메뉴를 이용해 주세요.</p>
-        <p><a th:href="@{/login}">로그인 화면으로</a></p>
+<head th:replace="~{fragments/hrms :: head('접근 거부')}"></head>
+<body class="login-page">
+    <div class="login-brand" style="flex:0.6;">
+        <h1>Access Denied</h1>
+        <p>현재 계정으로는 해당 메뉴에 접근할 수 없습니다.</p>
+    </div>
+    <div class="login-panel" style="flex:1;">
+        <div class="login-box">
+            <h2>접근 권한 없음</h2>
+            <p class="sub">USER / ADMIN 계정에 맞는 메뉴를 이용해 주세요.</p>
+            <a th:href="@{/login}" class="btn btn-primary" style="width:100%;margin-top:16px;">로그인 화면으로</a>
+        </div>
     </div>
 </body>
 </html>

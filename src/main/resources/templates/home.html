@@ -1,43 +1,66 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사용자 메인 - 경력증명서 시스템</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 40px; }
-        .card { background: #fff; max-width: 520px; margin: 0 auto; padding: 32px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        h1 { font-size: 1.3rem; color: #333; margin-bottom: 8px; }
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; background: #e8f5e9; color: #2e7d32; margin-bottom: 16px; }
-        .info { color: #555; line-height: 1.8; margin-bottom: 24px; }
-        .menu-title { font-size: 0.85rem; color: #888; margin-bottom: 8px; }
-        .menu { list-style: none; padding: 0; margin: 0; }
-        .menu li { margin-bottom: 10px; }
-        .menu a { display: block; padding: 12px 16px; background: #f8f9fa; border-radius: 6px; color: #333; text-decoration: none; border: 1px solid #e0e0e0; }
-        .menu a:hover { background: #e8f0fe; border-color: #4a90d9; }
-        .btn-logout { margin-top: 24px; padding: 9px 20px; background: #e74c3c; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    </style>
-</head>
+<head th:replace="~{fragments/hrms :: head('대시보드')}"></head>
 <body>
-    <div class="card">
-        <h1>사용자 메인</h1>
-        <span class="badge">USER 계정</span>
-        <div class="info">
-            <p>이름: <strong th:text="${name}"></strong></p>
-            <p>ID: <strong th:text="${userId}"></strong></p>
-        </div>
+<div class="app-shell">
+    <aside th:replace="~{fragments/hrms :: sidebar-user('home')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/hrms :: topbar('대시보드', '직원 Self-Service 포털')}"></header>
+        <main class="app-content">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="label">성명</div>
+                    <div class="value" th:text="${name}"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">사번 / ID</div>
+                    <div class="value" th:text="${userId}"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">계정 유형</div>
+                    <div class="value">직원 (USER)</div>
+                </div>
+            </div>
 
-        <!-- FR-02/FR-03: 경력 조회 후 증명서 신청·출력 -->
-        <p class="menu-title">이용 가능 메뉴</p>
-        <ul class="menu">
-            <li><a th:href="@{/career}">경력 조회</a></li>
-            <li><a th:href="@{/boards}">건의 게시판</a></li>
-        </ul>
-
-        <form th:action="@{/logout}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="btn-logout">로그아웃</button>
-        </form>
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2>업무 메뉴</h2>
+                        <p class="card-desc">경력 조회 → 증명서 신청 → 출력 순서로 이용하세요.</p>
+                    </div>
+                </div>
+                <ul class="menu-grid">
+                    <li>
+                        <a th:href="@{/career}">
+                            <span class="menu-icon">☰</span>
+                            <span class="menu-text">
+                                <strong>경력 조회</strong>
+                                <span>본인 재직 정보 확인</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/certificate}">
+                            <span class="menu-icon">📄</span>
+                            <span class="menu-text">
+                                <strong>증명서 신청</strong>
+                                <span>경력증명서 발급 신청</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/boards}">
+                            <span class="menu-icon">💬</span>
+                            <span class="menu-text">
+                                <strong>건의 게시판</strong>
+                                <span>의견·문의 등록</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </main>
     </div>
+</div>
 </body>
 </html>

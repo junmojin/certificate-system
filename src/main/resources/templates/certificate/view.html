@@ -3,34 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>경력증명서</title>
+    <title>경력증명서 · HR Portal</title>
+    <link rel="stylesheet" th:href="@{/css/hrms.css}">
     <style>
-        body {
-            font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
-            background: #e9ecef;
-            margin: 0;
-            padding: 32px 20px;
-        }
-        .toolbar {
-            max-width: 720px;
-            margin: 0 auto 12px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-        .toolbar button, .toolbar a {
-            padding: 8px 14px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 0.85rem;
-            color: #fff;
-            background: #4a90d9;
-        }
-        .toolbar a.secondary { background: #6c757d; }
-
+        .cert-view-area { background: #e9ecef; padding: 8px 0 24px; }
+        .cert-toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; margin-bottom: 12px; max-width: 720px; margin-left: auto; margin-right: auto; }
+        .cert-status-banner { max-width: 720px; margin: 0 auto 12px; }
         .cert-wrapper {
             max-width: 720px;
             margin: 0 auto;
@@ -113,23 +91,6 @@
         .cert-representative {
             font-size: 0.95rem;
         }
-        .screen-only {
-            margin-top: 16px;
-            text-align: right;
-            font-size: 0.82rem;
-            color: #666;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.78rem;
-            background: #fff3cd;
-            color: #856404;
-            margin-left: 6px;
-        }
-        .status-badge.approved { background: #e8f5e9; color: #2e7d32; }
-        .status-badge.rejected { background: #fdecea; color: #c0392b; }
 
         @page {
             size: A4;
@@ -137,13 +98,10 @@
         }
 
         @media print {
-            html, body {
-                background: #fff;
-                margin: 0;
-                padding: 0;
-            }
-            .toolbar { display: none !important; }
-            .screen-only { display: none !important; }
+            .sidebar, .topbar, .cert-toolbar, .no-print { display: none !important; }
+            .app-main { margin-left: 0; }
+            .app-content { padding: 0; }
+            .cert-view-area { background: #fff; padding: 0; }
             .cert-wrapper { max-width: none; }
             .certificate {
                 box-shadow: none;
@@ -171,14 +129,28 @@
     </script>
 </head>
 <body>
-    <div class="toolbar no-print">
-        <button type="button" onclick="printCertificate()">인쇄</button>
-        <a th:href="@{/certificate}" class="secondary">신청 화면</a>
-        <a th:href="@{/career}" class="secondary">경력 조회</a>
-        <a th:href="@{/home}" class="secondary">메인</a>
-    </div>
-
-    <div class="cert-wrapper">
+<div class="app-shell">
+    <aside th:replace="~{fragments/hrms :: sidebar-user('certificate')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/hrms :: topbar('경력증명서', 'Certificate Viewer')}"></header>
+        <main class="app-content cert-view-area">
+            <div class="cert-status-banner no-print">
+                <div class="alert alert-warning" th:if="${cert.status.name() == 'PENDING'}">
+                    <strong>승인 대기</strong> — 관리자 검토 중입니다. 승인 후 인쇄할 수 있습니다.
+                </div>
+                <div class="alert alert-success" th:if="${cert.status.name() == 'APPROVED'}">
+                    <strong>발급 승인</strong> — 관리자가 승인했습니다. 아래 증명서를 인쇄할 수 있습니다.
+                </div>
+                <div class="alert alert-error" th:if="${cert.status.name() == 'REJECTED'}">
+                    <strong>발급 거부</strong> — 관리자가 거부했습니다. 내용 수정 후 다시 신청해 주세요.
+                </div>
+            </div>
+            <div class="cert-toolbar no-print">
+                <button type="button" class="btn btn-primary" th:if="${cert.status.name() == 'APPROVED'}"
+                        onclick="printCertificate()">인쇄</button>
+                <a th:href="@{/certificate}" class="btn btn-secondary">신청 화면</a>
+            </div>
+            <div class="cert-wrapper">
         <p class="doc-no">문서 번호: <span th:text="${cert.documentNo}"></span></p>
 
         <div class="certificate">
@@ -227,15 +199,10 @@
                 <div class="cert-org" th:text="${cert.issuerName}"></div>
                 <div class="cert-representative" th:text="${cert.representativeName}"></div>
             </div>
-
-            <div class="screen-only no-print">
-                신청 상태:
-                <span th:text="${cert.status.label}"></span>
-                <span class="status-badge" th:if="${cert.status.name() == 'PENDING'}">승인 대기</span>
-                <span class="status-badge approved" th:if="${cert.status.name() == 'APPROVED'}">발급 승인</span>
-                <span class="status-badge rejected" th:if="${cert.status.name() == 'REJECTED'}">발급 거부</span>
-            </div>
         </div>
+            </div>
+        </main>
     </div>
+</div>
 </body>
 </html>

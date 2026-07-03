@@ -1,55 +1,34 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>건의 글 작성</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 32px 20px; }
-        .card { background: #fff; max-width: 720px; margin: 0 auto; padding: 32px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-        h1 { font-size: 1.3rem; margin-bottom: 8px; }
-        .desc { color: #666; font-size: 0.88rem; margin-bottom: 20px; }
-        label { display: block; font-size: 0.85rem; color: #555; margin: 14px 0 6px; }
-        input[type="text"], textarea, input[type="file"] {
-            width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;
-        }
-        textarea { min-height: 240px; resize: vertical; }
-        .hint { color: #888; font-size: 0.8rem; margin-top: 6px; }
-        .error { color: #c0392b; font-size: 0.82rem; margin-top: 6px; }
-        .message { padding: 10px 12px; border-radius: 4px; margin-bottom: 16px; font-size: 0.88rem; background: #fdecea; color: #c0392b; }
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 0.92rem; }
-        .btn-primary { background: #4a90d9; color: #fff; }
-        .btn-secondary { background: #6c757d; color: #fff; }
-    </style>
-</head>
+<head th:replace="~{fragments/hrms :: head('건의 글 작성')}"></head>
 <body>
-    <div class="card">
-        <h1>건의 글 작성</h1>
-        <p class="desc">제목·본문을 입력하고 필요 시 첨부파일을 등록하세요.</p>
-
-        <div class="message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-
-        <form th:action="@{/boards}" th:object="${boardWriteRequest}" method="post" enctype="multipart/form-data">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-            <label for="title">제목</label>
-            <input type="text" id="title" th:field="*{title}" maxlength="200" placeholder="제목을 입력하세요">
-            <p class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
-
-            <label for="content">본문</label>
-            <textarea id="content" th:field="*{content}" maxlength="5000" placeholder="건의 내용을 입력하세요"></textarea>
-            <p class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
-
-            <label for="attachment">첨부파일 (선택)</label>
-            <input type="file" id="attachment" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.gif,.txt,.doc,.docx,.xls,.xlsx,.hwp,.zip">
-            <p class="hint">허용: pdf, 이미지, txt, doc/x, xls/x, hwp, zip · 최대 5MB · exe/html/js 등 실행 파일 불가</p>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">게시글 등록</button>
-                <a th:href="@{/boards}" class="btn btn-secondary">목록</a>
+<div class="app-shell">
+    <aside th:replace="${isAdmin} ? ~{fragments/hrms :: sidebar-admin('board')} : ~{fragments/hrms :: sidebar-user('board')}"></aside>
+    <div class="app-main">
+        <header th:replace="~{fragments/hrms :: topbar('건의 글 작성', 'New Suggestion')}"></header>
+        <main class="app-content">
+            <div class="card content-narrow">
+                <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+                <form th:action="@{/boards}" th:object="${boardWriteRequest}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <label class="field-label" for="title">제목</label>
+                    <input class="field-input" type="text" id="title" th:field="*{title}" maxlength="200">
+                    <p class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                    <label class="field-label" for="content">본문</label>
+                    <textarea class="field-input" id="content" th:field="*{content}" maxlength="5000"></textarea>
+                    <p class="field-error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+                    <label class="field-label" for="attachment">첨부파일 (선택)</label>
+                    <input class="field-input" type="file" id="attachment" name="attachment"
+                           accept=".pdf,.png,.jpg,.jpeg,.gif,.txt,.doc,.docx,.xls,.xlsx,.hwp,.zip">
+                    <p class="field-hint">pdf, 이미지, 문서, hwp, zip · 최대 5MB</p>
+                    <div class="btn-group" style="margin-top:20px;">
+                        <button type="submit" class="btn btn-primary">게시글 등록</button>
+                        <a th:href="@{/boards}" class="btn btn-secondary">목록</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </main>
     </div>
+</div>
 </body>
 </html>
