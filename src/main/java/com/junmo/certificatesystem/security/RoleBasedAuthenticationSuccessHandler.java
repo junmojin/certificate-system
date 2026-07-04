@@ -13,12 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * FR-02: 로그인 성공 직후 계정 유형에 따라 다른 화면으로 보내는 클래스.
- *
- * [흐름]
- * login.html Submit
- *   -> Spring Security 로그인 검증 성공
- *   -> onAuthenticationSuccess() 실행
- *   -> ADMIN이면 /admin/home, USER면 /home
  */
 @Component
 public class RoleBasedAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -29,9 +23,6 @@ public class RoleBasedAuthenticationSuccessHandler implements AuthenticationSucc
             HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
 
-        // authentication.getAuthorities() 예시:
-        // USER 계정 -> ["ROLE_USER"]
-        // ADMIN 계정 -> ["ROLE_ADMIN"]
         boolean isAdmin = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch("ROLE_ADMIN"::equals);

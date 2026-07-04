@@ -1,5 +1,34 @@
 package com.junmo.certificatesystem.entity;
-//로그인, 글쓰기 등 행위기록
-public class ActivityLog {
-    
+
+import com.junmo.certificatesystem.common.entity.BaseTimeEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "activity_logs", indexes = {
+        @Index(name = "idx_activity_logs_user_id", columnList = "user_id")
+})
+@Getter
+@Setter
+@NoArgsConstructor
+public class ActivityLog extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "user_id", nullable = false, length = 50)
+    private String userId;
+
+    @Column(name = "menu_name", nullable = false, length = 100)
+    private String menuName;
 }
