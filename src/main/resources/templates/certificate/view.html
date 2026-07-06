@@ -78,18 +78,11 @@
             text-align: center;
             line-height: 1.9;
         }
-        .cert-address {
-            font-size: 0.88rem;
-            color: #444;
-        }
         .cert-org {
             font-size: 1.35rem;
             font-weight: bold;
             margin: 8px 0;
             letter-spacing: 0.05rem;
-        }
-        .cert-representative {
-            font-size: 0.95rem;
         }
 
         @page {
@@ -195,9 +188,7 @@
             <p class="cert-date" th:text="${formattedIssueDate}"></p>
 
             <div class="cert-footer">
-                <div class="cert-address" th:text="${cert.companyAddress}"></div>
                 <div class="cert-org" th:text="${cert.issuerName}"></div>
-                <div class="cert-representative" th:text="${cert.representativeName}"></div>
             </div>
         </div>
             </div>

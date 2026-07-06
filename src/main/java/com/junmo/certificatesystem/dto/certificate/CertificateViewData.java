@@ -33,7 +33,5 @@ public class CertificateViewData {
     private final CertificateStatus status;
     private final LocalDate issueDate;
     private final LocalDateTime appliedAt;
-    private final String companyAddress;
     private final String issuerName;
-    private final String representativeName;
 }

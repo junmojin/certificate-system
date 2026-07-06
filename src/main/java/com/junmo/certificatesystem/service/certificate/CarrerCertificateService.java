@@ -25,8 +25,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CarrerCertificateService {
 
-    private static final String DEFAULT_COMPANY_ADDRESS = "경기도 의왕시 광진말로54 의왕스마트시티퀀텀 B동 5층";
-    private static final String DEFAULT_REPRESENTATIVE = "대표이사 O O O";
     private static final DateTimeFormatter TABLE_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final CarrerCertificateRepository carrerCertificateRepository;
@@ -181,9 +179,7 @@ public class CarrerCertificateService {
                 .status(certificate.getStatus())
                 .issueDate(LocalDate.now())
                 .appliedAt(certificate.getCreatedAt())
-                .companyAddress(DEFAULT_COMPANY_ADDRESS)
                 .issuerName(certificate.getCompanyName())
-                .representativeName(DEFAULT_REPRESENTATIVE)
                 .build();
     }
 
