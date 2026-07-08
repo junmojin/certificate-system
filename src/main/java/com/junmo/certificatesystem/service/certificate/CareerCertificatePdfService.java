@@ -72,11 +72,7 @@ public class CareerCertificatePdfService {
                 drawCenteredText(content, font, 11, y, formatDate(data.getIssueDate()));
                 y -= 48f;
 
-                drawCenteredText(content, font, 10, y, data.getCompanyAddress());
-                y -= 22f;
                 drawCenteredText(content, font, 14, y, data.getIssuerName());
-                y -= 22f;
-                drawCenteredText(content, font, 11, y, data.getRepresentativeName());
             }
 
             document.save(output);
