@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
+import com.junmo.certificatesystem.common.enums.ActivityType;
+
 @Component
 public class ActivityMenuResolver {
 
@@ -70,5 +72,27 @@ public class ActivityMenuResolver {
             return Optional.of("증명서 발급 거부");
         }
         return Optional.empty();
+    }
+
+    /** DB activity_type 컬럼 값 */
+    public ActivityType resolveActivityType(String httpMethod, String requestUri) {
+        if ("POST".equals(httpMethod)) {
+            if ("/certificate".equals(requestUri)) {
+                return ActivityType.CERTIFICATE_APPLY;
+            }
+            if ("/boards".equals(requestUri)) {
+                return ActivityType.BOARD_CREATE;
+            }
+            if (BOARD_DELETE.matcher(requestUri).matches()) {
+                return ActivityType.BOARD_DELETE;
+            }
+            if (CERTIFICATE_APPROVE.matcher(requestUri).matches()) {
+                return ActivityType.CERTIFICATE_APPROVE;
+            }
+            if (CERTIFICATE_REJECT.matcher(requestUri).matches()) {
+                return ActivityType.CERTIFICATE_REJECT;
+            }
+        }
+        return ActivityType.MENU_ACCESS;
     }
 }

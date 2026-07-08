@@ -1,11 +1,13 @@
 package com.junmo.certificatesystem.config;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.junmo.certificatesystem.common.enums.ActivityType;
 import com.junmo.certificatesystem.service.audit.ActivityLogRecorder;
 import com.junmo.certificatesystem.service.audit.ActivityMenuResolver;
 
@@ -31,7 +33,8 @@ public class MenuAccessLoggingInterceptor implements HandlerInterceptor {
         }
 
         String uri = normalizeUri(request);
-        if (uri.equals("/login") || uri.equals("/logout") || uri.equals("/admin/activity-logs")) {
+        if (uri.equals("/login") || uri.equals("/logout") || uri.equals("/admin/activity-logs")
+                || uri.startsWith("/admin/")) {
             return true;
         }
 
@@ -42,9 +45,16 @@ public class MenuAccessLoggingInterceptor implements HandlerInterceptor {
         if ("anonymousUser".equals(authentication.getPrincipal())) {
             return true;
         }
+        if (!hasUserRole(authentication)) {
+            return true;
+        }
 
         activityMenuResolver.resolve(request.getMethod(), uri)
-                .ifPresent(menuName -> activityLogRecorder.record(authentication.getName(), menuName));
+                .ifPresent(menuName -> activityLogRecorder.record(
+                        authentication.getName(),
+                        menuName,
+                        uri,
+                        activityMenuResolver.resolveActivityType(request.getMethod(), uri)));
 
         return true;
     }
@@ -56,5 +66,11 @@ public class MenuAccessLoggingInterceptor implements HandlerInterceptor {
             return uri.substring(contextPath.length());
         }
         return uri;
+    }
+
+    private boolean hasUserRole(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_USER"::equals);
     }
 }
