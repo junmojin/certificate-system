@@ -86,6 +86,9 @@ public class SecurityConfig {
                 // 일반 사용자 전용 URL
                 .requestMatchers("/home", "/career", "/certificate", "/certificate/**").hasRole("USER")
 
+                .requestMatchers("/html5view/resources/**").permitAll()
+                .requestMatchers("/html5view/**").hasRole("USER")
+
                 // 사용자 + 관리자 공통 URL
                 .requestMatchers("/boards", "/boards/**").hasAnyRole("USER", "ADMIN")
 
@@ -108,6 +111,9 @@ public class SecurityConfig {
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedHandler(accessDeniedHandler) // 권한 없음 처리
+            )
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/html5view/**")
             );
 
         return http.build();
