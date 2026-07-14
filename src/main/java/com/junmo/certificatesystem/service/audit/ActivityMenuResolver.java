@@ -46,6 +46,9 @@ public class ActivityMenuResolver {
         if (CERTIFICATE_VIEW.matcher(uri).matches()) {
             return Optional.of("경력증명서 조회");
         }
+        if (uri.startsWith("/html5view/")) {
+            return Optional.of("경력증명서 PDF 뷰어");
+        }
         if (BOARD_DETAIL.matcher(uri).matches()) {
             return Optional.of("건의 게시판 상세");
         }
