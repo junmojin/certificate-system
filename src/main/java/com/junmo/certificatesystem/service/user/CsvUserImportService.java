@@ -57,7 +57,7 @@ public class CsvUserImportService implements CommandLineRunner {
 
     private boolean upsertLine(String line) {
         String[] columns = line.split(",", -1);
-        if (columns.length < 5) {
+        if (columns.length < 6) {
             return false;
         }
 
@@ -65,13 +65,15 @@ public class CsvUserImportService implements CommandLineRunner {
         String password = columns[1].trim();
         String name = columns[2].trim();
         LocalDate hireDate = LocalDate.parse(columns[3].trim());
-        RoleType role = "Y".equalsIgnoreCase(columns[4].trim()) ? RoleType.ADMIN : RoleType.USER;
+        LocalDate birthDate = parseBirthDate(columns[4].trim());
+        RoleType role = "Y".equalsIgnoreCase(columns[5].trim()) ? RoleType.ADMIN : RoleType.USER;
 
         return userRepository.findByUserId(userId)
                 .map(user -> {
                     user.setPassword(password);
                     user.setName(name);
                     user.setHireDate(hireDate);
+                    user.setBirthDate(birthDate);
                     user.setRole(role);
                     user.setEnabled(true);
                     return false;
@@ -82,9 +84,17 @@ public class CsvUserImportService implements CommandLineRunner {
                     user.setPassword(password);
                     user.setName(name);
                     user.setHireDate(hireDate);
+                    user.setBirthDate(birthDate);
                     user.setRole(role);
                     userRepository.save(user);
                     return true;
                 });
+    }
+
+    private LocalDate parseBirthDate(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return LocalDate.parse(value.trim());
     }
 }
