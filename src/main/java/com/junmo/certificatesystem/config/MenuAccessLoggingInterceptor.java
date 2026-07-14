@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.junmo.certificatesystem.common.enums.ActivityType;
 import com.junmo.certificatesystem.service.audit.ActivityLogRecorder;
 import com.junmo.certificatesystem.service.audit.ActivityMenuResolver;
 
