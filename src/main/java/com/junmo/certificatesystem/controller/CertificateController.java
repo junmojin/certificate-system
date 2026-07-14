@@ -1,5 +1,6 @@
 package com.junmo.certificatesystem.controller;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.junmo.certificatesystem.config.properties.SmartCertProperties;
 import com.junmo.certificatesystem.dto.certificate.CertificateApplyRequest;
 import com.junmo.certificatesystem.dto.certificate.CertificateViewData;
 import com.junmo.certificatesystem.entity.CarrerCertificate;
@@ -25,8 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * FR-03 증명서 신청.
- * 화면 뷰어({@code certificate/view.html})에서 경력증명서를 확인·인쇄한다.
- * PDFBox 서식 구현은 {@link com.junmo.certificatesystem.service.certificate.CareerCertificatePdfService} 참고.
+ * 승인된 증명서는 HTML5 PDF 뷰어({@code html5view/np_reader.jsp})로 연다.
  */
 @Slf4j
 @Controller
@@ -35,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CertificateController {
 
     private final CarrerCertificateService carrerCertificateService;
+    private final SmartCertProperties smartCertProperties;
 
     @GetMapping("/certificate")
     @Transactional(readOnly = true)
@@ -66,7 +68,7 @@ public class CertificateController {
         return "redirect:/certificate/" + saved.getId() + "/view";
     }
 
-    /** 경력증명서 뷰어 (인쇄 가능) */
+    /** 경력증명서 — 승인 시 HTML5 뷰어, 그 외 HTML 안내 */
     @GetMapping("/certificate/{id}/view")
     @Transactional(readOnly = true)
     public String viewCertificate(
@@ -77,6 +79,25 @@ public class CertificateController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         CertificateViewData viewData = carrerCertificateService.getOwnCertificateView(
                 id, userDetails.getUsername());
+
+        if (carrerCertificateService.isViewableInPdfViewer(viewData.getStatus())) {
+            try {
+                carrerCertificateService.ensureOwnCertificatePdfFile(id, userDetails.getUsername());
+                return "redirect:/html5view/np_reader.jsp"
+                        + "?docno=" + id
+                        + "&bcd=" + smartCertProperties.getViewerBarcode()
+                        + "&ve=" + smartCertProperties.getViewerVoiceye()
+                        + "&wm=ok";
+            } catch (IOException e) {
+                log.error("경력증명서 PDF 파일 생성 실패 - certificateId={}", id, e);
+                HomeController.addUserAttributes(authentication, model);
+                addViewAttributes(model, viewData);
+                model.addAttribute("pdfError",
+                        "PDF 파일을 생성하지 못했습니다. app.smart-cert.pdf-dir 경로("
+                                + smartCertProperties.getPdfDir() + ")를 확인해 주세요.");
+                return "certificate/view";
+            }
+        }
 
         HomeController.addUserAttributes(authentication, model);
         addViewAttributes(model, viewData);

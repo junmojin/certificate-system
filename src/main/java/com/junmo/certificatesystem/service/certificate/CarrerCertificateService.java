@@ -1,6 +1,8 @@
 package com.junmo.certificatesystem.service.certificate;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.junmo.certificatesystem.common.enums.CertificateStatus;
+import com.junmo.certificatesystem.config.properties.SmartCertProperties;
 import com.junmo.certificatesystem.dto.certificate.CertificateAdminDetailResponse;
 import com.junmo.certificatesystem.dto.certificate.CertificateAdminSummaryResponse;
 import com.junmo.certificatesystem.dto.certificate.CertificateApplyRequest;
@@ -29,6 +32,7 @@ public class CarrerCertificateService {
 
     private final CarrerCertificateRepository carrerCertificateRepository;
     private final CareerCertificatePdfService careerCertificatePdfService;
+    private final SmartCertProperties smartCertProperties;
 
     @Transactional
     public CarrerCertificate apply(User applicant, CertificateApplyRequest request) {
@@ -54,6 +58,30 @@ public class CarrerCertificateService {
     public byte[] generateOwnCertificatePdf(Long certificateId, String userId) throws IOException {
         CertificateViewData viewData = getOwnCertificateView(certificateId, userId);
         return careerCertificatePdfService.generate(viewData);
+    }
+
+    /**
+     * HTML5 뷰어(np_reader_view.jsp)가 읽을 PDF를 gs_pdf/{certificateId}.pdf 로 준비한다.
+     */
+    @Transactional(readOnly = true)
+    public Path ensureOwnCertificatePdfFile(Long certificateId, String userId) throws IOException {
+        CertificateViewData viewData = getOwnCertificateView(certificateId, userId);
+        if (!isViewableInPdfViewer(viewData.getStatus())) {
+            throw new IllegalStateException("승인된 증명서만 PDF 뷰어로 열 수 있습니다.");
+        }
+
+        Path pdfDir = Path.of(smartCertProperties.getPdfDir());
+        Files.createDirectories(pdfDir);
+        Path pdfPath = pdfDir.resolve(certificateId + ".pdf");
+
+        byte[] pdfBytes = careerCertificatePdfService.generate(viewData);
+        Files.write(pdfPath, pdfBytes);
+
+        return pdfPath;
+    }
+
+    public boolean isViewableInPdfViewer(CertificateStatus status) {
+        return status == CertificateStatus.APPROVED || status == CertificateStatus.ISSUED;
     }
 
     @Transactional(readOnly = true)
@@ -164,7 +192,7 @@ public class CarrerCertificateService {
                 .documentNo(documentNo)
                 .userId(applicant.getUserId())
                 .name(applicant.getName())
-                .birthDateDisplay("-")
+                .birthDateDisplay(formatBirthDateDisplay(applicant.getBirthDate()))
                 .department("-")
                 .companyName(certificate.getCompanyName())
                 .position(certificate.getPosition())
@@ -174,8 +202,6 @@ public class CarrerCertificateService {
                 .workPeriod(formatWorkPeriod(applicant.getHireDate()))
                 .employmentStatus("재직중")
                 .purpose(certificate.getPurpose())
-                .assignedTask("")
-                .remarks("")
                 .status(certificate.getStatus())
                 .issueDate(LocalDate.now())
                 .appliedAt(certificate.getCreatedAt())
@@ -189,6 +215,10 @@ public class CarrerCertificateService {
 
     public String formatTableDate(LocalDate date) {
         return date.format(TABLE_DATE);
+    }
+
+    private String formatBirthDateDisplay(LocalDate birthDate) {
+        return birthDate == null ? "-" : formatTableDate(birthDate);
     }
 
     private String formatWorkPeriod(LocalDate hireDate) {

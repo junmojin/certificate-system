@@ -28,8 +28,6 @@ public class CertificateViewData {
     private final String workPeriod;
     private final String employmentStatus;
     private final String purpose;
-    private final String assignedTask;
-    private final String remarks;
     private final CertificateStatus status;
     private final LocalDate issueDate;
     private final LocalDateTime appliedAt;
