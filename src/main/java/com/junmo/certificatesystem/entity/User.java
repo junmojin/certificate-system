@@ -43,6 +43,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDate hireDate;
 
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private RoleType role;
